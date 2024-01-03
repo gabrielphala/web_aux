@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="edt_checkout_wizard" inherit_id="website_sale.wizard_checkout">
+    <xpath expr="//div[1]" position="before">
+        <style>
+        .progress-wizard .progress-wizard-step {
+          width: 20%;
+        }
+      </style>
+    </xpath>
+
+    <xpath expr="//div[@id='wizard-step20']/div[2]" position="replace">
+      <div class="text-center progress-wizard-steplabel">Billing</div>
+    </xpath>
+
+    <xpath expr="//div[hasclass('progress-wizard')]/a[1]" position="after">
+      <a class="no-decoration" t-att-href="step&gt;=15 and '/shop/beneficiaries' or '#'">
+        <div id="wizard-step15" t-att-class="'progress-wizard-step %s' % (step == 15 and 'active' or step&gt;15 and 'complete' or 'disabled')">
+          <div class="progress-wizard-bar d-none d-md-block"/>
+          <span class="progress-wizard-dot d-none d-md-inline-block"></span>
+          <div class="text-center progress-wizard-steplabel">Beneficiary</div>
+        </div>
+      </a>
+    </xpath>
+
+    <xpath expr="//div[hasclass('progress-wizard')]/a[3]" position="after">
+      <a class="no-decoration" t-att-href="step&gt;=35 and '/shop/pay' or '#'">
+        <div id="wizard-step35" t-att-class="'progress-wizard-step %s' % (step == 35 and 'active' or step&gt;35 and 'complete' or 'disabled')">
+          <div class="progress-wizard-bar d-none d-md-block"/>
+          <span class="progress-wizard-dot d-none d-md-inline-block"></span>
+          <div class="text-center progress-wizard-steplabel">Payment</div>
+        </div>
+      </a>
+    </xpath>
+  </template>
+
+  <template id="edt_checkout_address" inherit_id="website_sale.address">
+    <xpath expr="//h2[hasclass('o_page_header')]" position="inside">
+      <div style="display: flex; margin-left: 30px">
+        <button style="border: none; border-radius: 4px; padding: 8px 14px;">Sign up</button>
+        <button style="border: none; border-radius: 4px; padding: 8px 14px;">Log in</button>
+      </div>
+    </xpath>
+  </template>
+
+  <template id="edt_cart" inherit_id="website_sale.cart">
+    <xpath expr="//div[4]" position="replace">
+      <div class="d-flex justify-content-between">
+        <div>
+          <a role="button" href="/shop" class="btn btn-secondary mb32">
+            <span class="fa fa-chevron-left" />
+            <span>Continue<span class="d-none d-md-inline"> Shopping</span></span>
+          </a>
+        </div>
+        <div class="d-flex flex-column" t-if="website_sale_order and website_sale_order.website_order_line">
+          <a class="btn btn-primary float-end" role="button" t-attf-href="/shop/beneficiaries">
+            <span>Choose beneficiary</span>
+            <span class="fa fa-chevron-right"/>
+          </a>
+          <t t-call="payment.express_checkout"/>
+        </div>
+      </div>
+    </xpath>
+  </template>
+
+  <template id="shop_beneficiary_list" name="Beneficiary Selection">
+    <t t-call="website.layout">
+      <div class="container oe_website_sale py-2">
+        <t t-set="step" t-value="15" />
+        <t t-call="web_aux.edt_checkout_wizard" />
+        <h1>Beneficiary Selection</h1>
+        <t t-call="portal.portal_table">
+          <thead>
+            <tr class="active">
+              <th>Name</th>
+              <th>Mobile</th>
+              <th>City</th>
+              <th>Country</th>
+            </tr>
+          </thead>
+          <tbody>
+            <input type='hidden' id="csrf_token" t-att-value="request.csrf_token()"/>
+            <t t-foreach="beneficiaries" t-as="beneficiary">
+              <tr>
+                <td>
+                  <input type="radio" name="beneficiary_id" onchange="selectBeneficiary(event)" t-att-id="beneficiary.id"/>
+                  <t t-out="beneficiary.name" name="beneficiary-value"/>
+                </td>
+                <td><t t-out="beneficiary.mobile"/></td>
+                <td><t t-out="beneficiary.city"/></td>
+                <td><t t-out="beneficiary.country"/></td>
+              </tr>
+            </t>
+          </tbody>
+        </t>
+        <a href="/shop/checkout"><button style="margin-top: 2rem;">Billing -&gt;</button></a>
+      </div>
+    </t>
+    <script>
+      function selectBeneficiary (e) {
+        const input = document.querySelectorAll('input[name="beneficiary_id"]:checked')[0];
+
+        fetch('/shop/select/beneficiary', {
+          method: 'POST',
+          body: JSON.stringify({
+            params: {
+              beneficiary_id: input.id,
+              csrf_token: document.getElementById('csrf_token').value
+            }
+          }),
+          headers: {
+            "Content-Type": "application/json;charset=utf-8",
+          }
+        })
+      }
+    </script>
+  </template>
+
+  <template id="shop_payment" name="Payment" inherit_id="">
+    <t t-call="website.layout">
+      <div class="container oe_website_sale py-2">
+        <t t-set="step" t-value="35" />
+        <t t-call="web_aux.edt_checkout_wizard" />
+
+        <h1>Payment</h1>
+
+        <div style="display: flex; align-items: flex-start;">
+          <table style="flex: 1; margin-right: 4rem;" t-if="website_sale_order and website_sale_order.website_order_line" class="mb16 table table-striped table-sm js_cart_lines">
+            <t t-set="show_qty" t-value="is_view_active('website_sale.product_quantity')"/>
+            <thead>
+              <tr>
+                <th class="td-img">Product</th>
+                <th></th>
+                <th class="text-center td-qty">
+                  <t t-if="show_qty">
+                    <span>Quantity</span>
+                  </t>
+                </th>
+                <th class="text-center td-price">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="website_sale_order.website_order_line" t-as="line">
+                  <tr t-att-class="'optional_product info' if line.linked_line_id else None">
+                      <td t-if="not line.product_id" colspan="2" class='td-img'/>
+                      <t t-else="">
+                          <td align="center" class='td-img'>
+                              <span t-if="line._is_not_sellable_line() and line.product_id.image_128">
+                                  <img t-att-src="image_data_uri(line.product_id.image_128)"
+                                      class="img o_image_64_max rounded"
+                                      t-att-alt="line.name_short"/>
+                              </span>
+                              <span t-else=""
+                                  t-field="line.product_id.image_128"
+                                  t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}"
+                              />
+                          </td>
+                          <td class='td-product_name'><strong t-field="line.name_short" /></td>
+                      </t>
+                      <td class="text-center td-qty"> <t t-out="line.product_uom_qty"/></td>
+                      <td class="text-center td-price" name="price">
+                          <t t-set="combination" t-value="line.product_id.product_template_attribute_value_ids + line.product_no_variant_attribute_value_ids"/>
+                          <t t-set="combination_info" t-value="line.product_id.product_tmpl_id._get_combination_info(combination, pricelist=website_sale_order.pricelist_id, add_qty=line.product_uom_qty)"/>
+
+                          <t groups="account.group_show_line_subtotals_tax_excluded">
+                              <span t-field="line.price_reduce_taxexcl" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                          </t>
+                          <t groups="account.group_show_line_subtotals_tax_included">
+                              <span t-field="line.price_reduce_taxinc" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                          </t>
+                          <t t-if="line.discount">
+                              <del t-attf-class="#{'text-danger mr8'}" style="white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}" />
+                          </t>
+                          <small t-if="not line._is_not_sellable_line() and line.product_id.base_unit_price"
+                              class="cart_product_base_unit_price d-block text-muted"
+                              groups="website_sale.group_show_uom_price">
+                              <t t-call='website_sale.base_unit_price'>
+                                  <t t-set='product' t-value='line.product_id'/>
+                              </t>
+                          </small>
+                      </td>
+                  </tr>
+              </t>
+            </tbody>
+          </table>
+          <div style="flex: 0 0 20rem;">
+            <div class="card">
+              <div class="card-body">
+                <b>Bill To: </b>
+                <span t-esc="website_sale_order.partner_id" t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')" class="address-inline"/>
+              </div>
+            </div>
+            <div class="card" style="margin-top: 1rem;">
+              <div class="card-body">
+                <b>Beneficiary: </b>
+                <br/>
+                <t t-out="beneficiary.name" />
+                <br/>
+                <t t-out="beneficiary.mobile" />
+                <br/>
+                <t t-out="beneficiary.city" />,
+                <t t-out="beneficiary.country" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a href="/shop/confirm_order"><button>Confirm</button></a>
+      </div>
+    </t>
+  </template>
+
+  <template id="shop_billing_confirm" inherit_id="website_sale.checkout">
+    <xpath expr="//a[@href='/shop/confirm_order']" position="replace">
+      <a role="button" href="/shop/pay" class="btn btn-primary mb32">
+          <span>Proceed to payment</span>
+          <i class="fa fa-chevron-right"/>
+      </a>
+    </xpath>
+  </template>
+
+  <!--  -->
+</odoo>

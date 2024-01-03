@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="custom_sign_up" inherit_id="auth_signup.fields">
+    <xpath expr="//div[2]">
+      <div class="mb-3 field-name" style="margin-top: 20px;">
+        <label for="mobile">Mobile</label>
+        <input type="text" name="mobile" t-att-value="mobile" id="mobile" class="form-control form-control-sm" placeholder="e.g. 0834567823"
+          required="required" t-att-readonly="'readonly' if only_passwords else None"
+          t-att-autofocus="'autofocus' if login and not only_passwords else None" />
+      </div>
+
+	    <div class="mb-3 field-name">
+        <label for="id_no">ID / Passport no</label>
+        <input type="text" name="id_no" t-att-value="id_no" id="id_no" class="form-control form-control-sm" placeholder="e.g. 990225960082"
+          required="required" t-att-readonly="'readonly' if only_passwords else None"
+          t-att-autofocus="'autofocus' if login and not only_passwords else None" />
+      </div>
+
+	    <div class="mb-3 field-name">
+        <label for="country">Country</label>
+        <input type="text" name="country" t-att-value="country" id="country" class="form-control form-control-sm" placeholder="e.g. South Africa"
+          required="required" t-att-readonly="'readonly' if only_passwords else None"
+          t-att-autofocus="'autofocus' if login and not only_passwords else None" />
+      </div>
+    </xpath>
+  </template>
+</odoo>
