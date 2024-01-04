@@ -8,3 +8,4 @@ class Beneficiary(models.Model):
   mobile = fields.Char(string='Mobile')
   city = fields.Char(string='City')
   country = fields.Char(string='Country')
+  user_id = fields.Many2one('res.partner')
