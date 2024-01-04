@@ -35,17 +35,17 @@
         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
         <div style="display: flex; margin-top: 8px; align-items; center;">
           <label for="name" style="min-width: 120px; display: block; margin-right: 10px;">Name</label>
-          <input type="text" style="border: 1px solid #eee; border-radius: 4px; background-color: #fff; padding: 8px 14px;" name="name" id="name"/>
+          <input type="text" style="border: 1px solid #eee; border-radius: 4px; background-color: #fff; padding: 8px 14px;" name="name" id="name" placeholder="John Doe"/>
         </div>
         
         <div style="display: flex; margin-top: 8px; align-items; center;">
           <label for="mobile" style="min-width: 120px;display: block; margin-right: 10px;">Mobile</label>
-          <input type="text" style="border: 1px solid #eee; border-radius: 4px; background-color: #fff; padding: 8px 14px;" name="mobile" id="mobile"/>
+          <input type="text" style="border: 1px solid #eee; border-radius: 4px; background-color: #fff; padding: 8px 14px;" onkeyup="validateNo()" name="mobile" id="mobile" placeholder="+263123456789" value="+263"/>
         </div>
 
         <div style="display: flex; margin-top: 8px; align-items; center;">
           <label for="city" style="min-width: 120px;display: block; margin-right: 10px;">City</label>
-          <input type="text" style="border: 1px solid #eee; border-radius: 4px; background-color: #fff; padding: 8px 14px;" name="city" id="city"/>
+          <input type="text" style="border: 1px solid #eee; border-radius: 4px; background-color: #fff; padding: 8px 14px;" name="city" id="city" placeholder="Harare"/>
         </div>
 
         <div style="display: flex; margin-top: 8px; align-items; center;">
@@ -302,6 +302,14 @@
         <button style="margin-top: 40px; padding: 8px 14px; border-radius: 4px; border: none;">Add beneficiary</button>
       </form>
     </t>
+
+    <script>
+      function validateNo () {
+        const val = document.getElementById('mobile').value;
+
+        document.getElementById('mobile').value = `+${val.replace(/[a-zA-Z]|\W|0|/g, '')}`;
+      }
+    </script>
   </template>
 
   <template id="portal_breadcrumbs" inherit_id="portal.portal_breadcrumbs">
