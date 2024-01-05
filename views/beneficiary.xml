@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+  <record id="view_webaux_beneficiary" model="ir.ui.view">
+		<field name="name">web_aux.beneficiaries.tree</field>
+		<field name="model">web_aux.beneficiaries</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="name"/>
+				<field name="mobile"/>
+				<field name="city"/>
+				<field name="country"/>
+			</tree>
+		</field>
+	</record>
 
+  <record id="action_webaux_beneficiaries" model="ir.actions.act_window">
+		<field name="name">Beneficiaries</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">web_aux.beneficiaries</field>
+		<field name="view_mode">tree,form</field>
+	</record>
+
+  <menuitem id="menu_web_aux_root_beneficiaries"
+		name="Beneficiaries"
+		parent="menu_web_aux_root"
+    action="action_webaux_beneficiaries"
+		sequence="10"/>
 </odoo>

@@ -3,6 +3,7 @@
 	"author": "Gabriel Phala",
 	"depends": ['portal'],
 	"data": [
+		"views/menu.xml",
 		"views/signup_ext.xml",
 		"views/beneficiary.xml",
 		"views/portal.xml",
