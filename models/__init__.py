@@ -1,1 +1,1 @@
-from . import auth, partner, beneficiary
+from . import partner, beneficiary

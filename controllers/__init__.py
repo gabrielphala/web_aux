@@ -1,1 +1,1 @@
-from . import portal, shop
+from . import auth, portal, shop
