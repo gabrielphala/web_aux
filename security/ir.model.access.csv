@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-web_aux.access_web_aux_beneficiaries,access_web_aux_beneficiaries,web_aux.model_web_aux_beneficiaries,base.group_portal,1,1,1,1
+web_aux.access_web_aux_beneficiaries_p,access_web_aux_beneficiaries_p,web_aux.model_web_aux_beneficiaries,base.group_portal,1,1,1,1
+web_aux.access_web_aux_beneficiaries_u,access_web_aux_beneficiaries_u,web_aux.model_web_aux_beneficiaries,base.group_user,1,1,1,1
